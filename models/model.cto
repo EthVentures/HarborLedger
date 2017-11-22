@@ -1,0 +1,80 @@
+/**
+ * HarborLedger business network definition.
+ */
+namespace com.harborledger.network
+
+
+concept Address {
+    o String street
+    o String city
+    o String state
+    o String country
+    o String zip
+}
+
+concept ContactDetails {
+  o String countryOfOrigin  optional
+  o String mobilePhone  optional
+  o Address address optional
+}
+
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  --> Refugee owner
+  o String value
+}
+
+asset CampVisit identified by visitId {
+  o String visitId
+  --> Refugee owner
+  o Address location
+  o DateTime arrivalDateTime
+}
+
+
+participant Refugee identified by participantId{
+  o String participantId
+  o String firstName
+  o String lastName
+  o ContactDetails contactDetails optional
+}
+
+participant NonProfitWorker extends HarborUser {
+  o String organization
+}
+participant GovernmentWorker extends HarborUser {
+  o String organization
+}
+
+participant MedicalWorker extends HarborUser {
+  o String organization
+}
+
+participant HarborAdmin extends HarborUser {
+  o String[] authorized optional
+}
+
+participant HarborUser identified by participantId {
+    o String participantId
+    o String firstName
+    o String lastName
+    o ContactDetails contactDetails optional
+}
+
+transaction SampleTransaction {
+  --> SampleAsset asset
+  o String newValue
+}
+
+transaction Checkin {
+
+    --> CampVisit visit
+
+}
+
+event SampleEvent {
+  --> SampleAsset asset
+  o String oldValue
+  o String newValue
+}
