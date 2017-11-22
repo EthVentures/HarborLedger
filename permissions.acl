@@ -1,9 +1,9 @@
 /**
- * Sample access control list.
+ * Access control list.
  */
 rule EverybodyCanReadEverything {
     description: "Allow all participants read access to all resources"
-    participant: "com.harborledger.network.Refugee"
+    participant: "com.harborledger.network.*"
     operation: READ
     resource: "com.harborledger.network.*"
     action: ALLOW
@@ -11,7 +11,7 @@ rule EverybodyCanReadEverything {
 
 rule EverybodyCanSubmitTransactions {
     description: "Allow all participants to submit transactions"
-    participant: "com.harborledger.network.Refugee"
+    participant: "com.harborledger.network.*"
     operation: CREATE
     resource: "com.harborledger.network.SampleTransaction"
     action: ALLOW
@@ -19,9 +19,9 @@ rule EverybodyCanSubmitTransactions {
 
 rule OwnerHasFullAccessToTheirAssets {
     description: "Allow all participants full access to their assets"
-    participant(p): "com.harborledger.network.Refugee"
+    participant(p): "com.harborledger.network.*"
     operation: ALL
-    resource(r): "com.harborledger.network.SampleAsset"
+    resource(r): "com.harborledger.network.*"
     condition: (r.owner.getIdentifier() === p.getIdentifier())
     action: ALLOW
 }

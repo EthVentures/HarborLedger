@@ -17,16 +17,14 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.json",
     "test-inner": "mocha -t 0 --recursive && cucumber-js",
     "test-cover": "nyc npm run test-inner",
-    "test": "npm run test-inner",
-    "deployNetwork": "composer archive create --sourceType dir --sourceName . -a ./dist/harbor-ledger-network.bna && composer network deploy -p hlfv1 --archiveFile ./dist/harbor-ledger-network.bna --enrollId PeerAdmin --enrollSecret adminpw -A admin -S && composer network list -n harbor-ledger-network --enrollId admin --enrollSecret adminpw -p hlfv1",
-    "updateNetwork": "composer archive create --sourceType dir --sourceName . -a ./dist/harbor-ledger-network.bna && composer network update -p hlfv1 --archiveFile ./dist/harbor-ledger-network.bna --enrollId admin --enrollSecret adminpw && composer network list -n harbor-ledger-network --enrollId admin --enrollSecret adminpw -p hlfv1"
+    "test": "npm run test-inner"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/EthVentures/HarborLedger.git"
   },
   "keywords": [
-    "SampleAsset",
+    "Refugees",
     "composer",
     "composer-network"
   ],

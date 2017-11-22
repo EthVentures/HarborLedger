@@ -18,157 +18,157 @@ Feature: Permissions Check
         Given I have deployed the business network definition ..
         And I have added the following participants of type com.harborledger.network.Refugee
             | participantId   | firstName | lastName |
-            | alice@email.com | Alice     | A        |
-            | bob@email.com   | Bob       | B        |
-        And I have added the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 10    |
-            | 2       | bob@email.com   | 20    |
-        And I have issued the participant com.harborledger.network.Refugee#alice@email.com with the identity alice1
-        And I have issued the participant com.harborledger.network.Refugee#bob@email.com with the identity bob1
+            | 12345 | Dave     | A        |
+            | 67890   | Aleks       | B        |
+        And I have added the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 10    |
+            | 2       | 67890   | 20    |
+        And I have issued the participant com.harborledger.network.Refugee#12345 with the identity alice1
+        And I have issued the participant com.harborledger.network.Refugee#67890 with the identity bob1
 
-    Scenario: Alice can read all of the assets
+    Scenario: Dave can read all of the assets
         When I use the identity alice1
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 10    |
-            | 2       | bob@email.com   | 20    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 10    |
+            | 2       | 67890   | 20    |
 
-    Scenario: Bob can read all of the assets
+    Scenario: Aleks can read all of the assets
         When I use the identity alice1
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 10    |
-            | 2       | bob@email.com   | 20    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 10    |
+            | 2       | 67890   | 20    |
 
-    Scenario: Alice can add assets that she owns
+    Scenario: Dave can add assets that he owns
         When I use the identity alice1
-        And I add the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 3       | alice@email.com | 30    |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 3       | alice@email.com | 30    |
+        And I add the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 3       | 12345 | 30    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 3       | 12345 | 30    |
 
-    Scenario: Alice cannot add assets that Bob owns
+    Scenario: Dave cannot add assets that Aleks owns
         When I use the identity alice1
-        And I add the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 3       | bob@email.com   | 30    |
+        And I add the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 3       | 67890   | 30    |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Bob can add assets that he owns
+    Scenario: Aleks can add assets that he owns
         When I use the identity bob1
-        And I add the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 4       | bob@email.com   | 40    |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 4       | bob@email.com   | 40    |
+        And I add the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 4       | 67890   | 40    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 4       | 67890   | 40    |
 
-    Scenario: Bob cannot add assets that Alice owns
+    Scenario: Aleks cannot add assets that Dave owns
         When I use the identity bob1
-        And I add the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 4       | alice@email.com | 40    |
+        And I add the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 4       | 12345 | 40    |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Alice can update her assets
+    Scenario: Dave can update his assets
         When I use the identity alice1
-        And I update the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 50    |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 50    |
+        And I update the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 50    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 50    |
 
-    Scenario: Alice cannot update Bob's assets
+    Scenario: Dave cannot update Aleks's assets
         When I use the identity alice1
-        And I update the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 2       | bob@email.com   | 50    |
+        And I update the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 2       | 67890   | 50    |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Bob can update his assets
+    Scenario: Aleks can update his assets
         When I use the identity bob1
-        And I update the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner         | value |
-            | 2       | bob@email.com | 60    |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner         | value |
-            | 2       | bob@email.com | 60    |
+        And I update the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner         | value |
+            | 2       | 67890 | 60    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner         | value |
+            | 2       | 67890 | 60    |
 
-    Scenario: Bob cannot update Alice's assets
+    Scenario: Aleks cannot update Dave's assets
         When I use the identity bob1
-        And I update the following asset of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 60    |
+        And I update the following asset of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 60    |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Alice can remove her assets
+    Scenario: Dave can remove his assets
         When I use the identity alice1
-        And I remove the following asset of type com.harborledger.network.SampleAsset
-            | assetId |
+        And I remove the following asset of type com.harborledger.network.BankAccount
+            | accountId |
             | 1       |
-        Then I should not have the following assets of type com.harborledger.network.SampleAsset
-            | assetId |
+        Then I should not have the following assets of type com.harborledger.network.BankAccount
+            | accountId |
             | 1       |
 
-    Scenario: Alice cannot remove Bob's assets
+    Scenario: Dave cannot remove Aleks's assets
         When I use the identity alice1
-        And I remove the following asset of type com.harborledger.network.SampleAsset
-            | assetId |
+        And I remove the following asset of type com.harborledger.network.BankAccount
+            | accountId |
             | 2       |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Bob can remove his assets
+    Scenario: Aleks can remove his assets
         When I use the identity bob1
-        And I remove the following asset of type com.harborledger.network.SampleAsset
-            | assetId |
+        And I remove the following asset of type com.harborledger.network.BankAccount
+            | accountId |
             | 2       |
-        Then I should not have the following assets of type com.harborledger.network.SampleAsset
-            | assetId |
+        Then I should not have the following assets of type com.harborledger.network.BankAccount
+            | accountId |
             | 2       |
 
-    Scenario: Bob cannot remove Alice's assets
+    Scenario: Aleks cannot remove Dave's assets
         When I use the identity bob1
-        And I remove the following asset of type com.harborledger.network.SampleAsset
-            | assetId |
+        And I remove the following asset of type com.harborledger.network.BankAccount
+            | accountId |
             | 1       |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Alice can submit a transaction for her assets
+    Scenario: Dave can submit a transaction for his assets
         When I use the identity alice1
         And I submit the following transaction of type com.harborledger.network.SampleTransaction
             | asset | newValue |
             | 1     | 50       |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner           | value |
-            | 1       | alice@email.com | 50    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner           | value |
+            | 1       | 12345 | 50    |
         And I should have received the following event of type com.harborledger.network.SampleEvent
             | asset   | oldValue | newValue |
             | 1       | 10       | 50       |
 
-    Scenario: Alice cannot submit a transaction for Bob's assets
+    Scenario: Dave cannot submit a transaction for Aleks's assets
         When I use the identity alice1
         And I submit the following transaction of type com.harborledger.network.SampleTransaction
             | asset | newValue |
             | 2     | 50       |
         Then I should get an error matching /does not have .* access to resource/
 
-    Scenario: Bob can submit a transaction for his assets
+    Scenario: Aleks can submit a transaction for his assets
         When I use the identity bob1
         And I submit the following transaction of type com.harborledger.network.SampleTransaction
             | asset | newValue |
             | 2     | 60       |
-        Then I should have the following assets of type com.harborledger.network.SampleAsset
-            | assetId | owner         | value |
-            | 2       | bob@email.com | 60    |
+        Then I should have the following assets of type com.harborledger.network.BankAccount
+            | accountId | owner         | value |
+            | 2       | 67890 | 60    |
         And I should have received the following event of type com.harborledger.network.SampleEvent
             | asset   | oldValue | newValue |
             | 2       | 20       | 60       |
 
-    Scenario: Bob cannot submit a transaction for Alice's assets
+    Scenario: Aleks cannot submit a transaction for Dave's assets
         When I use the identity bob1
         And I submit the following transaction of type com.harborledger.network.SampleTransaction
             | asset | newValue |

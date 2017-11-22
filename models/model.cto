@@ -3,7 +3,6 @@
  */
 namespace com.harborledger.network
 
-
 concept Address {
     o String street
     o String city
@@ -13,40 +12,46 @@ concept Address {
 }
 
 concept ContactDetails {
-  o String countryOfOrigin  optional
+
   o String mobilePhone  optional
   o Address address optional
 }
 
-
-asset SampleAsset identified by assetId {
-  o String assetId
+asset BankAccount identified by accountId {
+  o String accountId
   --> Refugee owner
   o String value
 }
 
-asset CampVisit identified by visitId {
-  o String visitId
-  --> Refugee owner
-  o Address location
-  o DateTime arrivalDateTime
-}
 
-
-participant Refugee identified by participantId{
+participant Refugee identified by participantId {
   o String participantId
   o String firstName
   o String lastName
+  o String countryOfOrigin  optional
   o ContactDetails contactDetails optional
+}
+
+abstract participant Organization identified by organizationId {
+  o String organizationId
+  o String email
+  o Address address
+  o Double accountBalance
+}
+
+participant NonProfit extends Organization {
+}
+participant GovAgency extends Organization {
+}
+participant Clinic extends Organization {
 }
 
 participant NonProfitWorker extends HarborUser {
   o String organization
 }
-participant GovernmentWorker extends HarborUser {
+participant GovWorker extends HarborUser {
   o String organization
 }
-
 participant MedicalWorker extends HarborUser {
   o String organization
 }
@@ -63,18 +68,15 @@ participant HarborUser identified by participantId {
 }
 
 transaction SampleTransaction {
-  --> SampleAsset asset
+  --> BankAccount asset
   o String newValue
-}
-
-transaction Checkin {
-
-    --> CampVisit visit
-
 }
 
 event SampleEvent {
-  --> SampleAsset asset
+  --> BankAccount asset
   o String oldValue
   o String newValue
+}
+
+transaction SetupDemo {
 }

@@ -34,9 +34,9 @@ describe('Sample', () => {
     // This is the factory for creating instances of types.
     let factory;
 
-    // These are the identities for Alice and Bob.
-    let aliceIdentity;
-    let bobIdentity;
+    // These are the identities for dave and Aleks.
+    let daveIdentity;
+    let aleksIdentity;
 
     // These are a list of receieved events.
     let events;
@@ -89,28 +89,28 @@ describe('Sample', () => {
                 factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
                 // Create the participants.
-                const alice = factory.newResource('com.harborledger.network', 'Refugee', 'alice@email.com');
-                alice.firstName = 'Alice';
-                alice.lastName = 'A';
-                const bob = factory.newResource('com.harborledger.network', 'Refugee', 'bob@email.com');
-                bob.firstName = 'Bob';
-                bob.lastName = 'B';
+                const dave = factory.newResource('com.harborledger.network', 'Refugee', '12345');
+                dave.firstName = 'David';
+                dave.lastName = 'Conroy';
+                const aleks = factory.newResource('com.harborledger.network', 'Refugee', '67890');
+                aleks.firstName = 'Aleks';
+                aleks.lastName = 'Velkoski';
                 return businessNetworkConnection.getParticipantRegistry('com.harborledger.network.Refugee')
                     .then((participantRegistry) => {
-                        participantRegistry.addAll([alice, bob]);
+                        participantRegistry.addAll([dave, aleks]);
                     });
 
             })
             .then(() => {
 
                 // Create the assets.
-                const asset1 = factory.newResource('com.harborledger.network', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'alice@email.com');
+                const asset1 = factory.newResource('com.harborledger.network', 'BankAccount', '1');
+                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '12345');
                 asset1.value = '10';
-                const asset2 = factory.newResource('com.harborledger.network', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'bob@email.com');
+                const asset2 = factory.newResource('com.harborledger.network', 'BankAccount', '2');
+                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '67890');
                 asset2.value = '20';
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         assetRegistry.addAll([asset1, asset2]);
                     });
@@ -118,13 +118,13 @@ describe('Sample', () => {
             .then(() => {
 
                 // Issue the identities.
-                return businessNetworkConnection.issueIdentity('com.harborledger.network.Refugee#alice@email.com', 'alice1')
+                return businessNetworkConnection.issueIdentity('com.harborledger.network.Refugee#12345', 'dave1')
                     .then((identity) => {
-                        aliceIdentity = identity;
-                        return businessNetworkConnection.issueIdentity('com.harborledger.network.Refugee#bob@email.com', 'bob1');
+                        daveIdentity = identity;
+                        return businessNetworkConnection.issueIdentity('com.harborledger.network.Refugee#67890', 'aleks1');
                     })
                     .then((identity) => {
-                        bobIdentity = identity;
+                        aleksIdentity = identity;
                     });
 
             });
@@ -148,14 +148,14 @@ describe('Sample', () => {
             });
     }
 
-    it('Alice can read all of the assets', () => {
+    it('Dave can read all of the assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Get the assets.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.getAll();
 
@@ -167,24 +167,24 @@ describe('Sample', () => {
                 // Validate the assets.
                 assets.should.have.lengthOf(2);
                 const asset1 = assets[0];
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#12345');
                 asset1.value.should.equal('10');
                 const asset2 = assets[1];
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#67890');
                 asset2.value.should.equal('20');
 
             });
 
     });
 
-    it('Bob can read all of the assets', () => {
+    it('Aleks can read all of the assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Get the assets.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.getAll();
 
@@ -196,29 +196,29 @@ describe('Sample', () => {
                 // Validate the assets.
                 assets.should.have.lengthOf(2);
                 const asset1 = assets[0];
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#12345');
                 asset1.value.should.equal('10');
                 const asset2 = assets[1];
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#67890');
                 asset2.value.should.equal('20');
 
             });
 
     });
 
-    it('Alice can add assets that she owns', () => {
+    it('Dave can add assets that she owns', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset3 = factory.newResource('com.harborledger.network', 'SampleAsset', '3');
-                asset3.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'alice@email.com');
+                const asset3 = factory.newResource('com.harborledger.network', 'BankAccount', '3');
+                asset3.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '12345');
                 asset3.value = '30';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset3)
                             .then(() => {
@@ -230,26 +230,26 @@ describe('Sample', () => {
             .then((asset3) => {
 
                 // Validate the asset.
-                asset3.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#alice@email.com');
+                asset3.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#12345');
                 asset3.value.should.equal('30');
 
             });
 
     });
 
-    it('Alice cannot add assets that Bob owns', () => {
+    it('Dave cannot add assets that Aleks owns', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset3 = factory.newResource('com.harborledger.network', 'SampleAsset', '3');
-                asset3.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'bob@email.com');
+                const asset3 = factory.newResource('com.harborledger.network', 'BankAccount', '3');
+                asset3.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '67890');
                 asset3.value = '30';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset3);
                     });
@@ -259,19 +259,19 @@ describe('Sample', () => {
 
     });
 
-    it('Bob can add assets that he owns', () => {
+    it('Aleks can add assets that he owns', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset4 = factory.newResource('com.harborledger.network', 'SampleAsset', '4');
-                asset4.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'bob@email.com');
+                const asset4 = factory.newResource('com.harborledger.network', 'BankAccount', '4');
+                asset4.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '67890');
                 asset4.value = '40';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset4)
                             .then(() => {
@@ -283,26 +283,26 @@ describe('Sample', () => {
             .then((asset4) => {
 
                 // Validate the asset.
-                asset4.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#bob@email.com');
+                asset4.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#67890');
                 asset4.value.should.equal('40');
 
             });
 
     });
 
-    it('Bob cannot add assets that Alice owns', () => {
+    it('Aleks cannot add assets that dave owns', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset4 = factory.newResource('com.harborledger.network', 'SampleAsset', '4');
-                asset4.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'alice@email.com');
+                const asset4 = factory.newResource('com.harborledger.network', 'BankAccount', '4');
+                asset4.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '12345');
                 asset4.value = '40';
 
                 // Add the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.add(asset4);
                     });
@@ -312,19 +312,19 @@ describe('Sample', () => {
 
     });
 
-    it('Alice can update her assets', () => {
+    it('Dave can update his assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset1 = factory.newResource('com.harborledger.network', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'alice@email.com');
+                const asset1 = factory.newResource('com.harborledger.network', 'BankAccount', '1');
+                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '12345');
                 asset1.value = '50';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset1)
                             .then(() => {
@@ -336,26 +336,26 @@ describe('Sample', () => {
             .then((asset1) => {
 
                 // Validate the asset.
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#12345');
                 asset1.value.should.equal('50');
 
             });
 
     });
 
-    it('Alice cannot update Bob\'s assets', () => {
+    it('Dave cannot update Aleks\'s assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset2 = factory.newResource('com.harborledger.network', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'bob@email.com');
+                const asset2 = factory.newResource('com.harborledger.network', 'BankAccount', '2');
+                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '67890');
                 asset2.value = '50';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset2);
                     });
@@ -365,19 +365,19 @@ describe('Sample', () => {
 
     });
 
-    it('Bob can update his assets', () => {
+    it('Aleks can update his assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset2 = factory.newResource('com.harborledger.network', 'SampleAsset', '2');
-                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'bob@email.com');
+                const asset2 = factory.newResource('com.harborledger.network', 'BankAccount', '2');
+                asset2.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '67890');
                 asset2.value = '60';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset2)
                             .then(() => {
@@ -389,26 +389,26 @@ describe('Sample', () => {
             .then((asset2) => {
 
                 // Validate the asset.
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#67890');
                 asset2.value.should.equal('60');
 
             });
 
     });
 
-    it('Bob cannot update Alice\'s assets', () => {
+    it('Aleks cannot update dave\'s assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Create the asset.
-                const asset1 = factory.newResource('com.harborledger.network', 'SampleAsset', '1');
-                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', 'alice@email.com');
+                const asset1 = factory.newResource('com.harborledger.network', 'BankAccount', '1');
+                asset1.owner = factory.newRelationship('com.harborledger.network', 'Refugee', '12345');
                 asset1.value = '60';
 
                 // Update the asset, then get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.update(asset1);
                     });
@@ -418,14 +418,14 @@ describe('Sample', () => {
 
     });
 
-    it('Alice can remove her assets', () => {
+    it('Dave can remove his assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('1')
                             .then(() => {
@@ -438,14 +438,14 @@ describe('Sample', () => {
 
     });
 
-    it('Alice cannot remove Bob\'s assets', () => {
+    it('Dave cannot remove Aleks\'s assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('2');
                     });
@@ -455,14 +455,14 @@ describe('Sample', () => {
 
     });
 
-    it('Bob can remove his assets', () => {
+    it('Aleks can remove his assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('2')
                             .then(() => {
@@ -475,14 +475,14 @@ describe('Sample', () => {
 
     });
 
-    it('Bob cannot remove Alice\'s assets', () => {
+    it('Aleks cannot remove dave\'s assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Remove the asset, then test the asset exists.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.remove('1');
                     });
@@ -492,15 +492,15 @@ describe('Sample', () => {
 
     });
 
-    it('Alice can submit a transaction for her assets', () => {
+    it('Dave can submit a transaction for his assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Submit the transaction.
                 const transaction = factory.newTransaction('com.harborledger.network', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('com.harborledger.network', 'SampleAsset', '1');
+                transaction.asset = factory.newRelationship('com.harborledger.network', 'BankAccount', '1');
                 transaction.newValue = '50';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -508,7 +508,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.get('1');
                     });
@@ -517,7 +517,7 @@ describe('Sample', () => {
             .then((asset1) => {
 
                 // Validate the asset.
-                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#alice@email.com');
+                asset1.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#12345');
                 asset1.value.should.equal('50');
 
                 // Validate the events.
@@ -525,7 +525,7 @@ describe('Sample', () => {
                 const event = events[0];
                 event.eventId.should.be.a('string');
                 event.timestamp.should.be.an.instanceOf(Date);
-                event.asset.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.SampleAsset#1');
+                event.asset.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.BankAccount#1');
                 event.oldValue.should.equal('10');
                 event.newValue.should.equal('50');
 
@@ -533,15 +533,15 @@ describe('Sample', () => {
 
     });
 
-    it('Alice cannot submit a transaction for Bob\'s assets', () => {
+    it('Dave cannot submit a transaction for Aleks\'s assets', () => {
 
-        // Use the identity for Alice.
-        return useIdentity(aliceIdentity)
+        // Use the identity for dave.
+        return useIdentity(daveIdentity)
             .then(() => {
 
                 // Submit the transaction.
                 const transaction = factory.newTransaction('com.harborledger.network', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('com.harborledger.network', 'SampleAsset', '2');
+                transaction.asset = factory.newRelationship('com.harborledger.network', 'BankAccount', '2');
                 transaction.newValue = '50';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -550,15 +550,15 @@ describe('Sample', () => {
 
     });
 
-    it('Bob can submit a transaction for his assets', () => {
+    it('Aleks can submit a transaction for his assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Submit the transaction.
                 const transaction = factory.newTransaction('com.harborledger.network', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('com.harborledger.network', 'SampleAsset', '2');
+                transaction.asset = factory.newRelationship('com.harborledger.network', 'BankAccount', '2');
                 transaction.newValue = '60';
                 return businessNetworkConnection.submitTransaction(transaction);
 
@@ -566,7 +566,7 @@ describe('Sample', () => {
             .then(() => {
 
                 // Get the asset.
-                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.SampleAsset')
+                return businessNetworkConnection.getAssetRegistry('com.harborledger.network.BankAccount')
                     .then((assetRegistry) => {
                         return assetRegistry.get('2');
                     });
@@ -575,7 +575,7 @@ describe('Sample', () => {
             .then((asset2) => {
 
                 // Validate the asset.
-                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#bob@email.com');
+                asset2.owner.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.Refugee#67890');
                 asset2.value.should.equal('60');
 
                 // Validate the events.
@@ -583,7 +583,7 @@ describe('Sample', () => {
                 const event = events[0];
                 event.eventId.should.be.a('string');
                 event.timestamp.should.be.an.instanceOf(Date);
-                event.asset.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.SampleAsset#2');
+                event.asset.getFullyQualifiedIdentifier().should.equal('com.harborledger.network.BankAccount#2');
                 event.oldValue.should.equal('20');
                 event.newValue.should.equal('60');
 
@@ -591,15 +591,15 @@ describe('Sample', () => {
 
     });
 
-    it('Bob cannot submit a transaction for Alice\'s assets', () => {
+    it('Aleks cannot submit a transaction for dave\'s assets', () => {
 
-        // Use the identity for Bob.
-        return useIdentity(bobIdentity)
+        // Use the identity for Aleks.
+        return useIdentity(aleksIdentity)
             .then(() => {
 
                 // Submit the transaction.
                 const transaction = factory.newTransaction('com.harborledger.network', 'SampleTransaction');
-                transaction.asset = factory.newRelationship('com.harborledger.network', 'SampleAsset', '1');
+                transaction.asset = factory.newRelationship('com.harborledger.network', 'BankAccount', '1');
                 transaction.newValue = '60';
                 return businessNetworkConnection.submitTransaction(transaction);
 

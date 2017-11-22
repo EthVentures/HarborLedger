@@ -1,0 +1,13 @@
+query selectCountries {
+    description: "Select all Refugees from PARAM"
+    statement:
+        SELECT com.harborledger.network.Refugee
+            WHERE (_$countryParam == countryOfOrigin)
+}
+
+query bankAccounts {
+    description: "Select all BankAccounts by owner"
+    statement:
+        SELECT com.harborledger.network.BankAccount
+            WHERE (_$ownerParam == owner)
+}
